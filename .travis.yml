@@ -6,16 +6,32 @@ before_install:
   - docker build -t dvillaj/docker-react -f Dockerfile.dev .
 
 script:
+# we need that the tets ends so we add a '--coverage' option
   - docker run -e CI=true dvillaj/docker-react npm run test -- --coverage
 
-# deploy:
-#   provider: elasticbeanstalk
-#   region: "us-east-2"
-#   app: "docker-react"
-#   env: "DockerReact-env"
-#   bucket_name: "elasticbeanstalk-us-east-2-758703245203"
-#   bucket_path: "docker-react"
-#   on:
-#     branch: master
-#   access_key_id: $AWS_ACCESS_KEY
-#   secret_access_key: $AWS_SECRET_KEY
+deploy:
+  # In case of build_name error
+  # edge=true
+  provider: elasticbeanstalk
+  # from amazon url
+  region: "us-east-2"
+  # the name of the amazon app
+  app: "docker-react"
+  # the name of amazon enviroment
+  env: "DockerReact-env"
+  
+  # From s3 service in amazon console. elasticbeanstalk creates a s3 bucket automatically
+  # it is reuse for other elasticbeanstalk project
+  bucket_name: "elasticbeanstalk-us-east-2-758703245203"
+  # By default the path is exaclty the name of the app
+  bucket_path: "docker-react"
+  on:
+    branch: master
+    
+  # From IAM service in amazon console
+  # Add a new user with accesss by API only
+  # Attach existing policies and check elasticbeanstalk full access
+  
+  # Add new enviroment variables in Travis repository (settings)
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
